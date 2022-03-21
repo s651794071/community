@@ -2,8 +2,8 @@ package com.nowcoder.community.service;
 
 import com.nowcoder.community.entity.LoginTicket;
 import com.nowcoder.community.entity.User;
-import com.nowcoder.community.mapper.LoginTicketMapper;
-import com.nowcoder.community.mapper.UserMapper;
+import com.nowcoder.community.dao.mapper.LoginTicketMapper;
+import com.nowcoder.community.dao.mapper.UserMapper;
 import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtil;
 import com.nowcoder.community.util.MailClient;
