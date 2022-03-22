@@ -1,4 +1,4 @@
-package com.nowcoder.community.dao.mapper;
+package com.nowcoder.community.mapper;
 
 import com.nowcoder.community.entity.DiscussPost;
 import org.apache.ibatis.annotations.Mapper;

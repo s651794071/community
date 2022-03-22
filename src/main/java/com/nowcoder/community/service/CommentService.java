@@ -1,7 +1,7 @@
 package com.nowcoder.community.service;
 
 import com.nowcoder.community.entity.Comment;
-import com.nowcoder.community.dao.mapper.CommentMapper;
+import com.nowcoder.community.mapper.CommentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +18,6 @@ public class CommentService {
     }
 
     public int findCommentCount(int entityType, int entityId) {
-        return commentMapper.selectCommentCount(entityType,entityId);
+        return commentMapper.selectCountByEntity(entityType,entityId);
     }
 }
