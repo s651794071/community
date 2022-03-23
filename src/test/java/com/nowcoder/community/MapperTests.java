@@ -2,9 +2,11 @@ package com.nowcoder.community;
 
 import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.entity.LoginTicket;
+import com.nowcoder.community.entity.Message;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.mapper.DiscussPostMapper;
 import com.nowcoder.community.mapper.LoginTicketMapper;
+import com.nowcoder.community.mapper.MessageMapper;
 import com.nowcoder.community.mapper.UserMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +31,9 @@ public class MapperTests {
 
     @Autowired
     private LoginTicketMapper loginTicketMapper;
+
+    @Autowired
+    private MessageMapper messageMapper;
 
     @Test
     public void testSelectUser(){
@@ -103,4 +108,34 @@ public class MapperTests {
         System.out.println(loginTicket);
     }
 
+    @Test
+    public void testMessage(){
+        List<Message> list1 = messageMapper.selectConversations(111,0,10);
+        for (Message message : list1) {
+            System.out.println(message);
+        }
+
+        int count = messageMapper.selectConversationsCount(111);
+        System.out.println(count);
+
+
+        List<Message> list2 = messageMapper.selectLetters("111_112",0,10);
+        for (Message message : list2) {
+            System.out.println(message);
+        }
+
+        count = messageMapper.selectLettersUnreadCount(131,"111_131");
+        System.out.println(count);
+    }
+
+
+    @Test
+    public void test1(){
+        String a= "111_112";
+        String[] ids = a.split("_");
+        int id0 = Integer.parseInt(ids[0]);
+        int id1 = Integer.parseInt(ids[1]);
+        System.out.println(id0);
+        System.out.println(id1);
+    }
 }
