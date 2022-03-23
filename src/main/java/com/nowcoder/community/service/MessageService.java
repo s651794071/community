@@ -5,6 +5,7 @@ import com.nowcoder.community.mapper.MessageMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.HtmlUtils;
 
 import java.util.List;
 
@@ -32,5 +33,16 @@ public class MessageService {
 
     public int findLettersUnreadCount(int userId, String conversationId) {
         return messageMapper.selectLettersUnreadCount(userId, conversationId);
+    }
+
+    public int addMessage(Message message) {
+        message.setContent(HtmlUtils.htmlEscape(message.getContent()));
+        // 记得过滤敏感词
+        return messageMapper.insertMessage(message);
+    }
+
+    // 设置已读
+    public int readMessage(List<Integer> ids) {
+        return messageMapper.updateMessageStatus(ids,1);
     }
 }
