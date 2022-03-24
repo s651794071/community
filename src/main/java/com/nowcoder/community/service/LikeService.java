@@ -27,8 +27,8 @@ public class LikeService {
         redisTemplate.execute(new SessionCallback() {
             @Override
             public Object execute(RedisOperations operations) throws DataAccessException {
-                String entityLikeKey = RedisKeyUtil.getEntityLike(entityType,entityId);
-                String userLikeKey = RedisKeyUtil.getUserLike(entityUserId);
+                String entityLikeKey = RedisKeyUtil.getEntityLikeKey(entityType,entityId);
+                String userLikeKey = RedisKeyUtil.getUserLikeKey(entityUserId);
                 boolean isMember = operations.opsForSet().isMember(entityLikeKey,userId);
 
                 operations.multi();
@@ -49,19 +49,19 @@ public class LikeService {
 
     // 查询某实体点赞数量
     public long findEntityLikeCount(int entityType, int entityId) {
-        String entityLikeKey = RedisKeyUtil.getEntityLike(entityType,entityId);
+        String entityLikeKey = RedisKeyUtil.getEntityLikeKey(entityType,entityId);
         return redisTemplate.opsForSet().size(entityLikeKey);
     }
 
     // 查询某user对某实体点赞状态 本来想返回boolean的，但是为了以后扩展可能增加其他状态比如点踩。用boolean就不能表示第三种状态了
     public int findEntityLikeStatus(int userId, int entityType, int entityId) {
-        String entityLikeKey = RedisKeyUtil.getEntityLike(entityType,entityId);
+        String entityLikeKey = RedisKeyUtil.getEntityLikeKey(entityType,entityId);
         return redisTemplate.opsForSet().isMember(entityLikeKey,userId) ? 1 : 0;
     }
 
     // 查询某user收到的赞数
     public int findUserLikeCount(int userId) {
-        String userLikeKey = RedisKeyUtil.getUserLike(userId);
+        String userLikeKey = RedisKeyUtil.getUserLikeKey(userId);
         Integer count = (Integer) redisTemplate.opsForValue().get(userLikeKey);
         return count == null? 0 : count;
     }
