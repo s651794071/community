@@ -86,7 +86,11 @@
 								<span class="float-right text-muted font-size-12" th:text="${#dates.format(map.followTime, 'yyyy-MM-dd HH:mm:ss')}">关注于 <i>2019-04-28 14:13:25</i></span>
 							</h6>
 							<div>
-								<button type="button" class="btn btn-info btn-sm float-right follow-btn">关注TA</button>
+								<input type="hidden" id="entityId" th:value="${map.user.Id}">
+								<button type="button"
+										th:class="|btn ${map.hasFollowed?'btn-secondary':'btn-info'} btn-sm float-right follow-btn|"
+										th:text="${map.hasFollowed?'已关注':'关注TA'}"
+										th:if="${loginUser!=null &&loginUser.id!=map.user.id}">关注TA</button>
 							</div>
 						</div>
 					</li>
