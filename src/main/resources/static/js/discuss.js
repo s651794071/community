@@ -1,8 +1,8 @@
-function like(btn, entityType, entityId, entityUserID) {
+function like(btn, entityType, entityId, entityUserID, postId) {
     // 向服务器发送异步请求
     $.post(
         CONTEXT_PATH +"/like",
-        {"entityType":entityType, "entityId": entityId, "entityUserId": entityUserID},
+        {"entityType":entityType, "entityId": entityId, "entityUserId": entityUserID, "postId": postId},
         function (data) {
             data = $.parseJSON(data);
             if (data.code == 0) {

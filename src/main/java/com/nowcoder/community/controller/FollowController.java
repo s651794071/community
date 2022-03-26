@@ -1,7 +1,9 @@
 package com.nowcoder.community.controller;
 
+import com.nowcoder.community.entity.Event;
 import com.nowcoder.community.entity.Page;
 import com.nowcoder.community.entity.User;
+import com.nowcoder.community.event.EvenProducer;
 import com.nowcoder.community.service.FollowService;
 import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.util.CommunityConstant;
@@ -20,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-public class FollowController implements CommunityConstant {
+public class FollowController implements CommunityConstant{
 
     @Autowired
     private FollowService followService;
@@ -31,6 +33,8 @@ public class FollowController implements CommunityConstant {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private EvenProducer evenProducer;
 
     @RequestMapping(path = "/follow", method = RequestMethod.POST)
     @ResponseBody // 异步请求
@@ -39,6 +43,14 @@ public class FollowController implements CommunityConstant {
 
         followService.follow(user.getId(), entityType, entityId);
 
+        Event event = new Event()
+                .setTopic(TOPIC_FOLLOW)
+                .setUserId(user.getId())
+                .setEntityType(entityType)
+                .setEntityId(entityId)
+                .setEntityUserId(entityId); // 我们目前就只写关注user，不写关注别的
+
+        evenProducer.fireEvent(event);
         return CommunityUtil.getJsonString(0, "已经关注！");
     }
 
