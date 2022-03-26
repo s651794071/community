@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class UserService implements CommunityConstant {
@@ -48,8 +49,14 @@ public class UserService implements CommunityConstant {
 //    private LoginTicketMapper loginTicketMapper;
 
     public User findUserById(int id) {
-        return userMapper.selectById(id);
+//        return userMapper.selectById(id);
+        User user = getCache(id);
+        if (user == null) {
+            user = initCache(id);
+        }
+        return user;
     }
+
 
     public Map<String, Object> register(User user) {
         Map<String, Object> map = new HashMap<>();
@@ -138,6 +145,8 @@ public class UserService implements CommunityConstant {
             return ACTIVATION_REPEAT;
         } else if (code.equals(user.getActivationCode())) {
             userMapper.updateStatus(userId,1); // 将用户的激活状态改为激活--1
+            // 清除缓存！！！！
+            clearCache(userId);
             return ACTIVATION_SUCCESS;
         } else { // 激活状态未激活--0，并且传进来的code不等于激活码 （避免有人可能伪造code）
             return ACTIVATION_FAILURE;
@@ -206,7 +215,10 @@ public class UserService implements CommunityConstant {
     }
 
     public int updateHeader(int userId, String headerUrl) {
-        return userMapper.updateHeader(userId,headerUrl);
+        int rows = userMapper.updateHeader(userId,headerUrl);
+        clearCache(userId);
+        return rows;
+//        return userMapper.updateHeader(userId,headerUrl);
     }
 
     public Map<String, Object> updatePassword(int userId, String oldPassword, String newPassword) {
@@ -232,4 +244,24 @@ public class UserService implements CommunityConstant {
         return userMapper.selectByName(username);
     }
 
+    // 1. 优先从缓存中取值
+    private User getCache(int userId) {
+        String redisKey = RedisKeyUtil.getUserKey(userId);
+        User user = (User) redisTemplate.opsForValue().get(redisKey);
+        return user;
+    }
+
+    // 2. 取不到时初始化缓存数据
+    private User initCache(int userId) {
+        User user = userMapper.selectById(userId); // 用userMapper取到user
+        String redisKey = RedisKeyUtil.getUserKey(userId);
+        redisTemplate.opsForValue().set(redisKey, user, 3600, TimeUnit.SECONDS); // 给一个小时有效时间
+        return user;
+    }
+
+    // 3. 数据变更时清除缓存数据
+    private void clearCache(int userId) {
+        String redisKey = RedisKeyUtil.getUserKey(userId);
+        redisTemplate.delete(redisKey);
+    }
 }
